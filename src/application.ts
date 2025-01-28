@@ -12,6 +12,7 @@ import {
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
+import debugFactory from 'debug';
 import path from 'path';
 import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
@@ -19,10 +20,13 @@ import {JwtService} from './services/jwt.service';
 import {MyUserService} from './services/user.service'; // Import the service
 import {JwtStrategy} from './strategies/jwt-strategy';
 
+const debug = debugFactory('loopback:example:socketio:demo');
+
 export {ApplicationConfig};
 
 export class CountrymasterpocApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
+  // SocketIoApplication,
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
@@ -51,6 +55,22 @@ export class CountrymasterpocApplication extends BootMixin(
     this.bind('services.UserService').toClass(MyUserService);
 
     this.projectRoot = __dirname;
+
+    // this.socketServer.use((socket, next) => {
+    //   debug('Global middleware - socket:', socket.id);
+    //   next();
+    // });
+
+    // const ns = this.socketServer.route(SocketIoController);
+    // ns.use((socket, next) => {
+    //   debug(
+    //     'Middleware for namespace %s - socket: %s',
+    //     socket.nsp.name,
+    //     socket.id,
+    //   );
+    //   next();
+    // });
+
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
