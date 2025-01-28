@@ -18,13 +18,6 @@ export class MyUserService implements UserService<User, Credentials> {
       throw new Error('Invalid credentials');
     }
 
-    // const passwordMatched = await bcrypt.compare(
-    //   credentials.password,
-    //   foundUser.password,
-    // );
-    // if (!passwordMatched) {
-    //   throw new Error('Invalid credentials');
-    // }
     return foundUser;
   }
 

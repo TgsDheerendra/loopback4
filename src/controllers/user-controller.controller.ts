@@ -33,7 +33,21 @@ export class UserControllerController {
 
   @post('/login')
   async login(
-    @requestBody() credentials: Credentials,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {type: 'string'},
+              password: {type: 'string'},
+            },
+            required: ['email', 'password'],
+          },
+        },
+      },
+    })
+    credentials: Credentials,
   ): Promise<{token: string; userProfile: any}> {
     const user = await this.userService.verifyCredentials(credentials);
     const userProfile = this.userService.convertToUserProfile(user);

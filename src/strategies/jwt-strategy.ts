@@ -15,17 +15,23 @@ export class JwtStrategy implements AuthenticationStrategy {
     const token = this.extractToken(request);
 
     if (!token) {
+      // If token is missing, throw a specific error to indicate it's missing
       throw new Error('Token not found');
     }
-    return this.jwtService.verifyToken(token);
+
+    try {
+      // Verify and extract user profile from the token
+      return this.jwtService.verifyToken(token);
+    } catch (error) {
+      // If token verification fails (invalid or expired token), throw a specific error
+      throw new Error('Invalid token'); // Or another custom error message
+    }
   }
 
   private extractToken(request: Request): string | undefined {
-    const authHeader = request.headers.authorization;
-    console.log('Authorization Header:', authHeader); // Add this for debugging
+    const authHeader = request?.headers?.authorization;
     if (authHeader?.startsWith('Bearer ')) {
-      throw new Error('Token not found');
-      //return authHeader.split(' ')[1];
+      return authHeader.split(' ')[1]; // Return the token part of the header
     }
     return undefined;
   }

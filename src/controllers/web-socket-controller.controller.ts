@@ -1,30 +1,25 @@
-import {}
-import {Socket} from 'socket.io';
+import {inject} from '@loopback/core';
+import {SocketIoServer} from '@loopback/socketio';
 
-export class WebSocketController {
-  constructor(
-    @ws.socket() private socket: Socket, // Inject WebSocket Socket instance
-  ) {}
+export class ChatController {
+  constructor(@inject('servers.socketio') private socket: SocketIoServer) {
+    this.socket.on('connection', (ws: any) => {
+      console.log('A user connected');
 
-  // Listen for a 'message' event from the client
-  @ws.on('message')
-  onMessage(data: any) {
-    console.log('Received message: ', data);
-    // Emit back the received message to all connected clients
-    this.socket.broadcast.emit('message', data);
-  }
+      // Send a message to the client when they connect
+      ws.emit('message', 'Hello from server!');
 
-  // Listen for 'join' event and let users join a room
-  @ws.on('join')
-  onJoin(room: string) {
-    this.socket.join(room);
-    console.log(`User joined room: ${room}`);
-  }
+      // Listen for incoming messages from the client
+      ws.on('message', (data: any) => {
+        console.log('Received from client:', data);
+        // Echo the message back to the client
+        ws.emit('message', `Server: ${data}`);
+      });
 
-  // Listen for 'leave' event and let users leave a room
-  @ws.on('leave')
-  onLeave(room: string) {
-    this.socket.leave(room);
-    console.log(`User left room: ${room}`);
+      // Handle disconnection
+      ws.on('disconnect', () => {
+        console.log('A user disconnected');
+      });
+    });
   }
 }

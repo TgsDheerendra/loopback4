@@ -2,7 +2,7 @@ import {
   AuthenticationComponent,
   registerAuthenticationStrategy,
 } from '@loopback/authentication';
-import {JWTAuthenticationComponent} from '@loopback/authentication-jwt';
+import {UserServiceBindings} from '@loopback/authentication-jwt';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -13,6 +13,7 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
 import {JwtService} from './services/jwt.service';
 import {MyUserService} from './services/user.service'; // Import the service
@@ -37,12 +38,15 @@ export class CountrymasterpocApplication extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
-    /**
-     * JWT authentication
-     */
+
+    // JWT Authentication Setup
     this.component(AuthenticationComponent);
-    this.component(JWTAuthenticationComponent);
+    //this.component(JWTAuthenticationComponent);
+    this.dataSource(MysqlDbDataSource, UserServiceBindings.DATASOURCE_NAME);
+    // Register the custom JWT strategy
     registerAuthenticationStrategy(this, JwtStrategy);
+
+    // Bind custom services
     this.bind('services.JwtService').toClass(JwtService);
     this.bind('services.UserService').toClass(MyUserService);
 
@@ -50,11 +54,12 @@ export class CountrymasterpocApplication extends BootMixin(
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
-        // Customize ControllerBooter Conventions here
         dirs: ['controllers'],
         extensions: ['.controller.js'],
         nested: true,
       },
     };
+    // Register the Socket.IO component for real-time communication
+    //this.component(SocketIoComponent);
   }
 }

@@ -52,6 +52,7 @@ export class CountrymstController {
   }
 
   @get('/countries/count')
+  @authenticate('jwt') // Specify the strategy name
   @response(200, {
     description: 'Country model count',
     content: {'application/json': {schema: CountSchema}},
@@ -61,7 +62,6 @@ export class CountrymstController {
   }
 
   @get('/countries')
-  @authenticate('jwt')
   @response(200, {
     description: 'Array of Country model instances',
     content: {
