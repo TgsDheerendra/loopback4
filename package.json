@@ -58,6 +58,7 @@
     "@loopback/rest-explorer": "^7.0.10",
     "@loopback/service-proxy": "^7.0.10",
     "@loopback/socketio": "^0.8.10",
+    "loopback-connector-mongodb": "^6.3.1",
     "loopback-connector-mysql": "^7.0.18",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
