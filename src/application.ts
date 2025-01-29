@@ -19,9 +19,9 @@ import {MySequence} from './sequence';
 import {JwtService} from './services/jwt.service';
 import {MyUserService} from './services/user.service'; // Import the service
 import {JwtStrategy} from './strategies/jwt-strategy';
+import {WebSocketServer} from './websocket/websocket.server';
 
 const debug = debugFactory('loopback:example:socketio:demo');
-
 export {ApplicationConfig};
 
 export class CountrymasterpocApplication extends BootMixin(
@@ -45,7 +45,7 @@ export class CountrymasterpocApplication extends BootMixin(
 
     // JWT Authentication Setup
     this.component(AuthenticationComponent);
-    //this.component(JWTAuthenticationComponent);
+
     this.dataSource(MysqlDbDataSource, UserServiceBindings.DATASOURCE_NAME);
     // Register the custom JWT strategy
     registerAuthenticationStrategy(this, JwtStrategy);
@@ -53,6 +53,12 @@ export class CountrymasterpocApplication extends BootMixin(
     // Bind custom services
     this.bind('services.JwtService').toClass(JwtService);
     this.bind('services.UserService').toClass(MyUserService);
+
+    // Create a new WebSocketServer instance
+    const wsServer = new WebSocketServer();
+
+    // Start the WebSocket server and attach it to the HTTP server (this.restServer)
+    wsServer.startServer(this.restServer);
 
     this.projectRoot = __dirname;
 
@@ -79,7 +85,6 @@ export class CountrymasterpocApplication extends BootMixin(
         nested: true,
       },
     };
-    // Register the Socket.IO component for real-time communication
-    //this.component(SocketIoComponent);
+    //this.lifeCycleObserver(MigrationObserver);
   }
 }
