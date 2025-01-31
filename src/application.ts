@@ -12,13 +12,14 @@ import {
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
+import * as http from 'http';
 import path from 'path';
 import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
+import {JwtStrategy} from './services/jwt-strategy';
 import {JwtService} from './services/jwt.service';
 import {MyUserService} from './services/user.service'; // Import the service
-import {JwtStrategy} from './strategies/jwt-strategy';
-import {WebSocketServer} from './websocket/websocket.server';
+import {WebSocketService} from './services/websocket.service';
 export {ApplicationConfig};
 
 export class CountrymasterpocApplication extends BootMixin(
@@ -39,22 +40,12 @@ export class CountrymasterpocApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-    // JWT Authentication Setup
     this.component(AuthenticationComponent);
-
     this.dataSource(MysqlDbDataSource, UserServiceBindings.DATASOURCE_NAME);
-    // Register the custom JWT strategy
     registerAuthenticationStrategy(this, JwtStrategy);
 
-    // Bind custom services
     this.bind('services.JwtService').toClass(JwtService);
     this.bind('services.UserService').toClass(MyUserService);
-
-    // Create a new WebSocketServer instance
-    const wsServer = new WebSocketServer();
-
-    // Start the WebSocket server and attach it to the HTTP server (this.restServer)
-    wsServer.startServer(this.restServer);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -65,6 +56,13 @@ export class CountrymasterpocApplication extends BootMixin(
         nested: true,
       },
     };
-    //this.lifeCycleObserver(MigrationObserver);
+
+    const httpServer = http.createServer(this.requestHandler);
+    const webSocketService = new WebSocketService();
+    webSocketService.startServer(httpServer);
+    httpServer.listen(5000, () => {
+      console.log(httpServer);
+      console.log('Server is running at http://127.0.0.1:5000');
+    });
   }
 }

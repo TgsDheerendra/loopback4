@@ -153,4 +153,9 @@ export class CountrymstController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.countryRepository.deleteById(id);
   }
+
+  @post('/add')
+  add(@requestBody() numbers: {a: number; b: number}): number {
+    return numbers.a + numbers.b;
+  }
 }
