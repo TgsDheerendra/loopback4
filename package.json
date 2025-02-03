@@ -58,6 +58,8 @@
     "@loopback/rest-explorer": "^7.0.10",
     "@loopback/service-proxy": "^7.0.10",
     "@loopback/socketio": "^0.8.10",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "loopback-connector-mongodb": "^6.3.1",
     "loopback-connector-mysql": "^7.0.18",
     "socket.io": "^4.8.1",

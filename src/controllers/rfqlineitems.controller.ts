@@ -1,4 +1,3 @@
-import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -53,7 +52,6 @@ export class RfqlineitemsController {
   }
 
   @get('/rfqlineitems/count')
-  @authenticate('jwt')
   @response(200, {
     description: 'Rfqlineitems model count',
     content: {'application/json': {schema: CountSchema}},

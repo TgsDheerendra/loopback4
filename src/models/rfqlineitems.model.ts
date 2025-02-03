@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {RfqLineAlternate} from './rfqlineitemsalternate.model';
 
 @model()
 export class RfqLineItems extends Entity {
@@ -62,6 +63,9 @@ export class RfqLineItems extends Entity {
     required: true,
   })
   isPurchase: boolean;
+
+  @hasMany(() => RfqLineAlternate)
+  rfqLineAlternates: RfqLineAlternate[];
 
   constructor(data?: Partial<RfqLineItems>) {
     super(data);

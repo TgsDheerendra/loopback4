@@ -16,6 +16,12 @@ export class Component extends Entity {
   mfgPN: string;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  mfgName: string;
+
+  @property({
     type: 'number',
     required: true,
   })
@@ -43,6 +49,7 @@ export class Component extends Entity {
     super(data);
   }
 }
+
 export interface ComponentRelations {
   // describe navigational properties here
 }
