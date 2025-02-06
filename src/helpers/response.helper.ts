@@ -2,9 +2,9 @@
 import {HttpErrors} from '@loopback/rest';
 
 export class ResponseHelper {
-  static success(message: string, data: any = null) {
+  static success(message: string, data: any = null, success: boolean = true) {
     return {
-      success: true,
+      success,
       message,
       data,
     };
@@ -13,16 +13,16 @@ export class ResponseHelper {
   static error(statusCode: number, message: string) {
     switch (statusCode) {
       case 400:
-        throw new HttpErrors.BadRequest(message);
+        return HttpErrors.BadRequest(message);
       case 401:
-        throw new HttpErrors.Unauthorized(message);
+        return HttpErrors.Unauthorized(message);
       case 403:
-        throw new HttpErrors.Forbidden(message);
+        return HttpErrors.Forbidden(message);
       case 404:
-        throw new HttpErrors.NotFound(message);
+        return HttpErrors.NotFound(message);
       case 500:
       default:
-        throw new HttpErrors.InternalServerError(message);
+        return HttpErrors.InternalServerError(message);
     }
   }
 }

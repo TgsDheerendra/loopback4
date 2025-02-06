@@ -1,18 +1,13 @@
 import {
-  Count,
-  CountSchema,
   Filter,
   FilterExcludingWhere,
   IsolationLevel,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
-  del,
   get,
   getModelSchemaRef,
   param,
-  patch,
   post,
   put,
   requestBody,
@@ -51,17 +46,6 @@ export class RfqlineitemsController {
     return this.rfqlineitemsRepository.create(rfqlineitems);
   }
 
-  @get('/rfqlineitems/count')
-  @response(200, {
-    description: 'Rfqlineitems model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(RfqLineItems) where?: Where<RfqLineItems>,
-  ): Promise<Count> {
-    return this.rfqlineitemsRepository.count(where);
-  }
-
   @get('/rfqlineitems')
   @response(200, {
     description: 'Array of Rfqlineitems model instances',
@@ -78,25 +62,6 @@ export class RfqlineitemsController {
     @param.filter(RfqLineItems) filter?: Filter<RfqLineItems>,
   ): Promise<RfqLineItems[]> {
     return this.rfqlineitemsRepository.find(filter);
-  }
-
-  @patch('/rfqlineitems')
-  @response(200, {
-    description: 'Rfqlineitems PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(RfqLineItems, {partial: true}),
-        },
-      },
-    })
-    rfqlineitems: RfqLineItems,
-    @param.where(RfqLineItems) where?: Where<RfqLineItems>,
-  ): Promise<Count> {
-    return this.rfqlineitemsRepository.updateAll(rfqlineitems, where);
   }
 
   @get('/rfqlineitems/{id}')
@@ -116,24 +81,6 @@ export class RfqlineitemsController {
     return this.rfqlineitemsRepository.findById(id, filter);
   }
 
-  @patch('/rfqlineitems/{id}')
-  @response(204, {
-    description: 'Rfqlineitems PATCH success',
-  })
-  async updateById(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(RfqLineItems, {partial: true}),
-        },
-      },
-    })
-    rfqlineitems: RfqLineItems,
-  ): Promise<void> {
-    await this.rfqlineitemsRepository.updateById(id, rfqlineitems);
-  }
-
   @put('/rfqlineitems/{id}')
   @response(204, {
     description: 'Rfqlineitems PUT success',
@@ -143,14 +90,6 @@ export class RfqlineitemsController {
     @requestBody() rfqlineitems: RfqLineItems,
   ): Promise<void> {
     await this.rfqlineitemsRepository.replaceById(id, rfqlineitems);
-  }
-
-  @del('/rfqlineitems/{id}')
-  @response(204, {
-    description: 'Rfqlineitems DELETE success',
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.rfqlineitemsRepository.deleteById(id);
   }
 
   @post('/rfqlineitems/bulk-create')

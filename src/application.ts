@@ -2,7 +2,6 @@ import {
   AuthenticationComponent,
   registerAuthenticationStrategy,
 } from '@loopback/authentication';
-import {UserServiceBindings} from '@loopback/authentication-jwt';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
@@ -41,7 +40,7 @@ export class CountrymasterpocApplication extends BootMixin(
     this.component(RestExplorerComponent);
 
     this.component(AuthenticationComponent);
-    this.dataSource(MysqlDbDataSource, UserServiceBindings.DATASOURCE_NAME);
+    this.dataSource(MysqlDbDataSource);
     registerAuthenticationStrategy(this, JwtStrategy);
 
     this.bind('services.JwtService').toClass(JwtService);
