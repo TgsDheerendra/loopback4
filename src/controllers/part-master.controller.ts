@@ -21,15 +21,17 @@ import {
 import {ResponseHelper} from '../helpers/response.helper';
 import {Component} from '../models';
 import {ComponentRepository} from '../repositories';
-import {PartMasterService} from '../services';
+import {PartMasterService, WeatherServiceProvider} from '../services';
 import {HTTP_STATUS} from '../utils/constants';
 
 export class PartMasterController {
   constructor(
     @repository(ComponentRepository)
     public componentRepository: ComponentRepository,
-    @service(PartMasterService) // Correct way to inject services
+    @service(PartMasterService)
     private readonly partMasterService: PartMasterService,
+    @service(WeatherServiceProvider) // Correctly injecting WeatherService here
+    private readonly weatherServiceProvider: WeatherServiceProvider,
   ) {}
 
   @post('/components')
@@ -124,5 +126,18 @@ export class PartMasterController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.componentRepository.deleteById(id);
+  }
+
+  //External API call
+  @get('/weather/{lat}/{lon}')
+  async getWeatherData(
+    @param.path.number('lat') lat: number,
+    @param.path.number('lon') lon: number,
+  ) {
+    try {
+      return await this.weatherServiceProvider.getWeather(lat, lon);
+    } catch (error) {
+      return ResponseHelper.error(HTTP_STATUS.BAD_REQUEST, error.message);
+    }
   }
 }
