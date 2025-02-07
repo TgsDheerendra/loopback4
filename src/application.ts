@@ -11,14 +11,12 @@ import {
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
-import * as http from 'http';
 import path from 'path';
 import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
 import {JwtStrategy} from './services/jwt-strategy';
 import {JwtService} from './services/jwt.service';
 import {MyUserService} from './services/user.service'; // Import the service
-import {WebSocketService} from './services/websocket.service';
 export {ApplicationConfig};
 
 export class CountrymasterpocApplication extends BootMixin(
@@ -40,6 +38,7 @@ export class CountrymasterpocApplication extends BootMixin(
     this.component(RestExplorerComponent);
 
     this.component(AuthenticationComponent);
+    // this.component(JWTAuthenticationComponent);
     this.dataSource(MysqlDbDataSource);
     registerAuthenticationStrategy(this, JwtStrategy);
 
@@ -56,12 +55,12 @@ export class CountrymasterpocApplication extends BootMixin(
       },
     };
 
-    const httpServer = http.createServer(this.requestHandler);
-    const webSocketService = new WebSocketService();
-    webSocketService.startServer(httpServer);
-    httpServer.listen(5000, () => {
-      console.log(httpServer);
-      console.log('Server is running at http://127.0.0.1:5000');
-    });
+    // const httpServer = http.createServer(this.requestHandler);
+    // const webSocketService = new WebSocketService();
+    // webSocketService.startServer(httpServer);
+    // httpServer.listen(5000, () => {
+    //   console.log(httpServer);
+    //   console.log('Server is running at http://127.0.0.1:5000');
+    // });
   }
 }

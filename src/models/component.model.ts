@@ -22,28 +22,29 @@ export class Component extends Entity {
   mfgName: string;
 
   @property({
-    type: 'number',
-    required: true,
-  })
-  packageQty: number;
-
-  @property({
     type: 'string',
-    required: true,
   })
   partStatus: string;
 
   @property({
-    type: 'string',
-    required: true,
+    type: 'boolean',
   })
-  unit: string;
+  isDeleted: boolean;
+
+  @property({
+    type: 'boolean',
+  })
+  isGoodPart: boolean;
 
   @property({
     type: 'string',
-    required: false,
   })
-  detailDescription?: string;
+  mountingType: string;
+
+  @property({
+    type: 'string',
+  })
+  partCategory: string;
 
   constructor(data?: Partial<Component>) {
     super(data);
