@@ -1,23 +1,14 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
-import {Component} from './component.model';
 import {RfqLineItems} from './rfq-line-items.model';
 
 @model()
-export class RfqLineItemsAlternatepart extends Entity {
+export class RfqLineItemsAlternatePart extends Entity {
   @property({
     type: 'number',
     id: true,
     generated: true,
   })
   id?: number;
-
-  // 🔹 Fix field name & set up relation to `RfqLineItems`
-  @belongsTo(() => RfqLineItems)
-  rfqLineItemsID: number;
-
-  // 🔹 Set up relation to `Component`
-  @belongsTo(() => Component)
-  partID: number;
 
   @property({
     type: 'string',
@@ -27,49 +18,19 @@ export class RfqLineItemsAlternatepart extends Entity {
 
   @property({
     type: 'string',
-  })
-  distPN?: string;
-
-  @property({
-    type: 'string',
-  })
-  mfgCode?: string;
-
-  @property({
-    type: 'string',
-  })
-  mfgPN?: string;
-
-  @property({
-    type: 'string',
-  })
-  description?: string;
-
-  @property({
-    type: 'boolean',
-  })
-  isDeleted?: boolean;
-
-  @property({
-    type: 'string',
     required: true,
   })
-  mountingType: string;
+  mfgPN: string; // Manufacturer Part Number
 
-  @property({
-    type: 'string',
+  // 🔹 Define the foreign key relation explicitly
+  @belongsTo(() => RfqLineItems, {
+    name: 'rfqLineItems',
+    keyFrom: 'rfqLineItemsId',
+    keyTo: 'id',
   })
-  partcategory?: string;
+  rfqLineItemsId: number;
 
-  constructor(data?: Partial<RfqLineItemsAlternatepart>) {
+  constructor(data?: Partial<RfqLineItemsAlternatePart>) {
     super(data);
   }
 }
-
-export interface RfqLineItemsAlternatepartRelations {
-  rfqLineItems?: RfqLineItems;
-  component?: Component;
-}
-
-export type RfqLineItemsAlternatepartWithRelations = RfqLineItemsAlternatepart &
-  RfqLineItemsAlternatepartRelations;

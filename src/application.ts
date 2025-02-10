@@ -16,7 +16,9 @@ import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
 import {JwtStrategy} from './services/jwt-strategy';
 import {JwtService} from './services/jwt.service';
-import {MyUserService} from './services/user.service'; // Import the service
+import {MyUserService} from './services/user.service';
+import {CrudRestComponent} from '@loopback/rest-crud';
+
 export {ApplicationConfig};
 
 export class CountrymasterpocApplication extends BootMixin(
@@ -62,5 +64,6 @@ export class CountrymasterpocApplication extends BootMixin(
     //   console.log(httpServer);
     //   console.log('Server is running at http://127.0.0.1:5000');
     // });
+    this.component(CrudRestComponent);
   }
 }

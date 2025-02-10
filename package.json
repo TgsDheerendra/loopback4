@@ -55,6 +55,7 @@
     "@loopback/core": "^6.1.7",
     "@loopback/repository": "^7.0.10",
     "@loopback/rest": "^14.0.10",
+    "@loopback/rest-crud": "^0.18.10",
     "@loopback/rest-explorer": "^7.0.10",
     "@loopback/service-proxy": "^7.0.10",
     "@loopback/socketio": "^0.8.10",

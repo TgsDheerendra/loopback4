@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {RfqLineItems} from './rfq-line-items.model';
 
 @model()
 export class Component extends Entity {
@@ -13,46 +14,30 @@ export class Component extends Entity {
     type: 'string',
     required: true,
   })
-  mfgPN: string;
+  mfgPN: string; // Manufacturer Part Number
 
   @property({
     type: 'string',
     required: true,
   })
-  mfgName: string;
+  mfgName: string; // Manufacturer Name
 
   @property({
     type: 'string',
   })
-  partStatus: string;
+  partStatus?: string; // Status of the component
 
   @property({
     type: 'boolean',
+    default: false,
   })
-  isDeleted: boolean;
+  isDeleted?: boolean;
 
-  @property({
-    type: 'boolean',
-  })
-  isGoodPart: boolean;
-
-  @property({
-    type: 'string',
-  })
-  mountingType: string;
-
-  @property({
-    type: 'string',
-  })
-  partCategory: string;
+  @hasMany(() => RfqLineItems, {keyTo: 'pardID'})
+  rfqlineitems: RfqLineItems[];
+  // Soft delete flag
 
   constructor(data?: Partial<Component>) {
     super(data);
   }
 }
-
-export interface ComponentRelations {
-  // describe navigational properties here
-}
-
-export type ComponentWithRelations = Component & ComponentRelations;

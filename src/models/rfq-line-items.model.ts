@@ -1,12 +1,5 @@
-import {
-  belongsTo,
-  Entity,
-  hasMany,
-  model,
-  property,
-} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Component} from './component.model';
-import {RfqLineItemsAlternatepart} from './rfq-line-items-alternatepart.model';
 
 @model()
 export class RfqLineItems extends Entity {
@@ -44,22 +37,10 @@ export class RfqLineItems extends Entity {
   })
   description?: string;
 
-  // 🔹 Establishing a relation: Many RfqLineItems belong to one Component
-  @belongsTo(() => Component)
-  partID: number;
-
-  // 🔹 One RfqLineItems can have many alternate parts
-  @hasMany(() => RfqLineItemsAlternatepart, {keyTo: 'rfqLineItemsID'})
-  alternateParts: RfqLineItemsAlternatepart[];
+  @belongsTo(() => Component, {name: 'parts'})
+  pardID: number;
 
   constructor(data?: Partial<RfqLineItems>) {
     super(data);
   }
 }
-
-export interface RfqLineItemsRelations {
-  component?: Component;
-  alternateParts?: RfqLineItemsAlternatepart[];
-}
-
-export type RfqLineItemsWithRelations = RfqLineItems & RfqLineItemsRelations;
