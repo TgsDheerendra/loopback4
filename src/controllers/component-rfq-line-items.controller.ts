@@ -15,14 +15,16 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {Component, RfqLineItems} from '../models';
+import {
+  Component,
+  RfqLineItems,
+} from '../models';
 import {ComponentRepository} from '../repositories';
 
 export class ComponentRfqLineItemsController {
   constructor(
-    @repository(ComponentRepository)
-    protected componentRepository: ComponentRepository,
-  ) {}
+    @repository(ComponentRepository) protected componentRepository: ComponentRepository,
+  ) { }
 
   @get('/components/{id}/rfq-line-items', {
     responses: {
@@ -40,16 +42,14 @@ export class ComponentRfqLineItemsController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<RfqLineItems>,
   ): Promise<RfqLineItems[]> {
-    return this.componentRepository.rfqlineitems(id).find(filter);
+    return this.componentRepository.rfqLineItems(id).find(filter);
   }
 
   @post('/components/{id}/rfq-line-items', {
     responses: {
       '200': {
         description: 'Component model instance',
-        content: {
-          'application/json': {schema: getModelSchemaRef(RfqLineItems)},
-        },
+        content: {'application/json': {schema: getModelSchemaRef(RfqLineItems)}},
       },
     },
   })
@@ -61,14 +61,13 @@ export class ComponentRfqLineItemsController {
           schema: getModelSchemaRef(RfqLineItems, {
             title: 'NewRfqLineItemsInComponent',
             exclude: ['id'],
-            optional: ['pardID'],
+            optional: ['componentId']
           }),
         },
       },
-    })
-    rfqLineItems: Omit<RfqLineItems, 'id'>,
+    }) rfqLineItems: Omit<RfqLineItems, 'id'>,
   ): Promise<RfqLineItems> {
-    return this.componentRepository.rfqlineitems(id).create(rfqLineItems);
+    return this.componentRepository.rfqLineItems(id).create(rfqLineItems);
   }
 
   @patch('/components/{id}/rfq-line-items', {
@@ -89,10 +88,9 @@ export class ComponentRfqLineItemsController {
       },
     })
     rfqLineItems: Partial<RfqLineItems>,
-    @param.query.object('where', getWhereSchemaFor(RfqLineItems))
-    where?: Where<RfqLineItems>,
+    @param.query.object('where', getWhereSchemaFor(RfqLineItems)) where?: Where<RfqLineItems>,
   ): Promise<Count> {
-    return this.componentRepository.rfqlineitems(id).patch(rfqLineItems, where);
+    return this.componentRepository.rfqLineItems(id).patch(rfqLineItems, where);
   }
 
   @del('/components/{id}/rfq-line-items', {
@@ -105,9 +103,8 @@ export class ComponentRfqLineItemsController {
   })
   async delete(
     @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(RfqLineItems))
-    where?: Where<RfqLineItems>,
+    @param.query.object('where', getWhereSchemaFor(RfqLineItems)) where?: Where<RfqLineItems>,
   ): Promise<Count> {
-    return this.componentRepository.rfqlineitems(id).delete(where);
+    return this.componentRepository.rfqLineItems(id).delete(where);
   }
 }

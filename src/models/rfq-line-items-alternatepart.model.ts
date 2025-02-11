@@ -1,7 +1,24 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {RfqLineItems} from './rfq-line-items.model';
 
-@model()
+@model({
+  settings: {
+    indexes: {
+      unique_rfqLineItemsId: {
+        keys: {rfqLineItemsId: 1}, // Ensure `custPN` is unique
+        options: {unique: true},
+      },
+    },
+    foreignKeys: {
+      fk_rfqline_items_id: {
+        name: 'fk_rfqline_items_id',
+        entity: 'RfqLineItems',
+        entityKey: 'id',
+        foreignKey: 'rfqLineItemsId',
+      },
+    },
+  },
+})
 export class RfqLineItemsAlternatePart extends Entity {
   @property({
     type: 'number',
@@ -23,11 +40,7 @@ export class RfqLineItemsAlternatePart extends Entity {
   mfgPN: string; // Manufacturer Part Number
 
   // 🔹 Define the foreign key relation explicitly
-  @belongsTo(() => RfqLineItems, {
-    name: 'rfqLineItems',
-    keyFrom: 'rfqLineItemsId',
-    keyTo: 'id',
-  })
+  @belongsTo(() => RfqLineItems)
   rfqLineItemsId: number;
 
   constructor(data?: Partial<RfqLineItemsAlternatePart>) {

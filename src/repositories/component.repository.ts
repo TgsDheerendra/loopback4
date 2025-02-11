@@ -9,11 +9,10 @@ export class ComponentRepository extends DefaultCrudRepository<
   typeof Component.prototype.id
 > {
 
-  public readonly rfqlineitems: HasManyRepositoryFactory<RfqLineItems, typeof Component.prototype.id>;
+  public readonly rfqLineItems: HasManyRepositoryFactory<RfqLineItems, typeof Component.prototype.id>;
 
   constructor(@inject('datasources.mysqlDb') dataSource: MysqlDbDataSource, @repository.getter('RfqLineItemsRepository') protected rfqLineItemsRepositoryGetter: Getter<RfqLineItemsRepository>,) {
     super(Component, dataSource);
-    this.rfqlineitems = this.createHasManyRepositoryFactoryFor('rfqlineitems', rfqLineItemsRepositoryGetter,);
-    this.registerInclusionResolver('rfqlineitems', this.rfqlineitems.inclusionResolver);
+    this.rfqLineItems = this.createHasManyRepositoryFactoryFor('rfqLineItems', rfqLineItemsRepositoryGetter,);
   }
 }
