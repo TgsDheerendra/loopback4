@@ -6,6 +6,7 @@ import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
+import {CrudRestComponent} from '@loopback/rest-crud';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -17,7 +18,6 @@ import {MySequence} from './sequence';
 import {JwtStrategy} from './services/jwt-strategy';
 import {JwtService} from './services/jwt.service';
 import {MyUserService} from './services/user.service';
-import {CrudRestComponent} from '@loopback/rest-crud';
 
 export {ApplicationConfig};
 
