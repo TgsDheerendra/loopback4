@@ -7,7 +7,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {RfqLineItems} from '../models';
+import {RfqLineItems, RfqLineItemsAlternatePart} from '../models';
 import {RfqLineItemsRepository} from '../repositories';
 
 export class RfqlineitemsController {
@@ -18,23 +18,60 @@ export class RfqlineitemsController {
 
   @post('/rfq-line-items')
   @response(200, {
-    description: 'RfqLineItems model instance',
-    content: {'application/json': {schema: getModelSchemaRef(RfqLineItems)}},
+    description: 'RfqLineItems model instance created successfully',
+    content: {'application/json': {schema: RfqLineItems}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(RfqLineItems, {
-            title: 'NewRfqLineItems',
-            exclude: ['id'],
-          }),
+          schema: {
+            type: 'object',
+            properties: {
+              lineItem: getModelSchemaRef(RfqLineItems, {
+                title: 'NewRfqLineItem',
+                exclude: ['id'],
+              }),
+              alternateParts: {
+                type: 'array',
+                items: getModelSchemaRef(RfqLineItemsAlternatePart, {
+                  title: 'NewRfqLineItemsAlternatePart',
+                  exclude: ['id', 'rfqLineItemsId'],
+                }),
+              },
+            },
+          },
         },
       },
     })
-    rfqLineItems: Omit<RfqLineItems, 'id'>,
+    data: {
+      lineItem: Omit<RfqLineItems, 'id'>;
+      alternateParts?: Omit<
+        RfqLineItemsAlternatePart,
+        'id' | 'rfqLineItemsId'
+      >[];
+    },
   ): Promise<RfqLineItems> {
-    return this.rfqLineItemsRepository.create(rfqLineItems);
+    // Create the RFQ Line Item entry first
+    const createdLineItem = await this.rfqLineItemsRepository.create(
+      data.lineItem,
+    );
+
+    // If alternate parts exist, create them using createAll()
+    if (data.alternateParts && data.alternateParts.length > 0) {
+      await Promise.all(
+        data.alternateParts.map(alternatePart =>
+          this.rfqLineItemsRepository
+            .rfqLineItemsAlternatePart(createdLineItem.id)
+            .create(alternatePart),
+        ),
+      );
+    }
+
+    // Return the created line item with relations included
+    return this.rfqLineItemsRepository.findById(createdLineItem.id, {
+      include: [{relation: 'rfqLineItemsAlternatePart'}],
+    });
   }
 
   @get('/rfq-line-items')
@@ -52,7 +89,14 @@ export class RfqlineitemsController {
   async find(
     @param.filter(RfqLineItems) filter?: Filter<RfqLineItems>,
   ): Promise<RfqLineItems[]> {
-    return this.rfqLineItemsRepository.find(filter);
+    return this.rfqLineItemsRepository.find({
+      ...filter,
+      include: [
+        {
+          relation: 'rfqLineItemsAlternatePart',
+        },
+      ],
+    });
   }
 
   @get('/rfq-line-items/{id}')
@@ -69,6 +113,16 @@ export class RfqlineitemsController {
     @param.filter(RfqLineItems, {exclude: 'where'})
     filter?: FilterExcludingWhere<RfqLineItems>,
   ): Promise<RfqLineItems> {
-    return this.rfqLineItemsRepository.findById(id, filter);
+    return this.rfqLineItemsRepository.findById(id, {
+      ...filter,
+      include: [
+        {
+          relation: 'rfqLineItemsAlternatePart',
+        },
+        {
+          relation: 'component',
+        },
+      ],
+    });
   }
 }

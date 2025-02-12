@@ -11,20 +11,17 @@ import {
   getModelSchemaRef,
   getWhereSchemaFor,
   param,
-  patch,
   post,
   requestBody,
 } from '@loopback/rest';
-import {
-  Component,
-  RfqLineItems,
-} from '../models';
+import {Component, RfqLineItems} from '../models';
 import {ComponentRepository} from '../repositories';
 
 export class ComponentRfqLineItemsController {
   constructor(
-    @repository(ComponentRepository) protected componentRepository: ComponentRepository,
-  ) { }
+    @repository(ComponentRepository)
+    protected componentRepository: ComponentRepository,
+  ) {}
 
   @get('/components/{id}/rfq-line-items', {
     responses: {
@@ -49,7 +46,9 @@ export class ComponentRfqLineItemsController {
     responses: {
       '200': {
         description: 'Component model instance',
-        content: {'application/json': {schema: getModelSchemaRef(RfqLineItems)}},
+        content: {
+          'application/json': {schema: getModelSchemaRef(RfqLineItems)},
+        },
       },
     },
   })
@@ -61,38 +60,15 @@ export class ComponentRfqLineItemsController {
           schema: getModelSchemaRef(RfqLineItems, {
             title: 'NewRfqLineItemsInComponent',
             exclude: ['id'],
-            optional: ['componentId']
+            optional: ['componentId'],
           }),
         },
       },
-    }) rfqLineItems: Omit<RfqLineItems, 'id'>,
+    })
+    rfqLineItems: Omit<RfqLineItems, 'id'>,
   ): Promise<RfqLineItems> {
     return this.componentRepository.rfqLineItems(id).create(rfqLineItems);
   }
-
-  @patch('/components/{id}/rfq-line-items', {
-    responses: {
-      '200': {
-        description: 'Component.RfqLineItems PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async patch(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(RfqLineItems, {partial: true}),
-        },
-      },
-    })
-    rfqLineItems: Partial<RfqLineItems>,
-    @param.query.object('where', getWhereSchemaFor(RfqLineItems)) where?: Where<RfqLineItems>,
-  ): Promise<Count> {
-    return this.componentRepository.rfqLineItems(id).patch(rfqLineItems, where);
-  }
-
   @del('/components/{id}/rfq-line-items', {
     responses: {
       '200': {
@@ -103,7 +79,8 @@ export class ComponentRfqLineItemsController {
   })
   async delete(
     @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(RfqLineItems)) where?: Where<RfqLineItems>,
+    @param.query.object('where', getWhereSchemaFor(RfqLineItems))
+    where?: Where<RfqLineItems>,
   ): Promise<Count> {
     return this.componentRepository.rfqLineItems(id).delete(where);
   }

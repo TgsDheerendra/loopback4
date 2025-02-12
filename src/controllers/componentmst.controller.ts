@@ -1,10 +1,9 @@
-import {Filter, FilterExcludingWhere, repository} from '@loopback/repository';
+import {Filter, repository} from '@loopback/repository';
 import {
   get,
   getModelSchemaRef,
   param,
   post,
-  put,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -16,7 +15,6 @@ export class ComponentmstController {
     @repository(ComponentRepository)
     public componentRepository: ComponentRepository,
   ) {}
-
   @post('/component')
   @response(200, {
     description: 'Component model instance',
@@ -40,7 +38,8 @@ export class ComponentmstController {
 
   @get('/component')
   @response(200, {
-    description: 'Array of Component model instances',
+    description:
+      'Array of Component model instances including RfqLineItems and Alternate Parts',
     content: {
       'application/json': {
         schema: {
@@ -53,34 +52,36 @@ export class ComponentmstController {
   async find(
     @param.filter(Component) filter?: Filter<Component>,
   ): Promise<Component[]> {
-    return this.componentRepository.find(filter);
+    return this.componentRepository.find({
+      ...filter,
+      include: [
+        {
+          relation: 'rfqLineItems',
+        },
+      ],
+    });
   }
 
   @get('/component/{id}')
   @response(200, {
-    description: 'Component model instance',
+    description:
+      'Component model instance with related RfqLineItems and Alternate Parts',
     content: {
       'application/json': {
         schema: getModelSchemaRef(Component, {includeRelations: true}),
       },
     },
   })
-  async findById(
-    @param.path.number('id') id: number,
-    @param.filter(Component, {exclude: 'where'})
-    filter?: FilterExcludingWhere<Component>,
-  ): Promise<Component> {
-    return this.componentRepository.findById(id, filter);
-  }
-
-  @put('/component/{id}')
-  @response(204, {
-    description: 'Component PUT success',
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() component: Component,
-  ): Promise<void> {
-    await this.componentRepository.replaceById(id, component);
+  async findById(@param.path.number('id') id: number): Promise<Component> {
+    return this.componentRepository.findById(id, {
+      include: [
+        {
+          relation: 'rfqLineItems',
+          scope: {
+            include: [{relation: 'rfqLineItemsAlternatePart'}], // Nested relation
+          },
+        },
+      ],
+    });
   }
 }

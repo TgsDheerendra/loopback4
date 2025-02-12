@@ -3,12 +3,12 @@ import {RfqLineItems} from './rfq-line-items.model';
 
 @model({
   settings: {
-    indexes: {
-      unique_rfqLineItemsId: {
-        keys: {rfqLineItemsId: 1}, // Ensure `custPN` is unique
-        options: {unique: true},
-      },
-    },
+    // indexes: {
+    //   unique_rfqLineItemsId: {
+    //     keys: {rfqLineItemsId: 1}, // Ensure `custPN` is unique
+    //     options: {unique: true},
+    //   },
+    // },
     foreignKeys: {
       fk_rfqline_items_id: {
         name: 'fk_rfqline_items_id',
