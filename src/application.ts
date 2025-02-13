@@ -13,6 +13,7 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {DatabaseMigration} from './database-scripts/migrate-db'; // Ensure this is imported
 import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
 import {JwtStrategy} from './services/jwt-strategy';
@@ -40,7 +41,6 @@ export class CountrymasterpocApplication extends BootMixin(
     this.component(RestExplorerComponent);
 
     this.component(AuthenticationComponent);
-    // this.component(JWTAuthenticationComponent);
     this.dataSource(MysqlDbDataSource);
     registerAuthenticationStrategy(this, JwtStrategy);
 
@@ -48,7 +48,6 @@ export class CountrymasterpocApplication extends BootMixin(
     this.bind('services.UserService').toClass(MyUserService);
 
     this.projectRoot = __dirname;
-    // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
         dirs: ['controllers'],
@@ -57,13 +56,21 @@ export class CountrymasterpocApplication extends BootMixin(
       },
     };
 
-    // const httpServer = http.createServer(this.requestHandler);
-    // const webSocketService = new WebSocketService();
-    // webSocketService.startServer(httpServer);
-    // httpServer.listen(5000, () => {
-    //   console.log(httpServer);
-    //   console.log('Server is running at http://127.0.0.1:5000');
-    // });
     this.component(CrudRestComponent);
+  }
+
+  // ✅ Move Migration logic to a separate lifecycle method
+  async boot() {
+    await super.boot();
+
+    try {
+      console.log('Running database migrations...');
+      const mysqlDs = new MysqlDbDataSource();
+      const migration = new DatabaseMigration(mysqlDs);
+      await migration.run();
+      console.log('Database migrations completed successfully.');
+    } catch (error) {
+      console.error('Error running migrations:', error);
+    }
   }
 }
