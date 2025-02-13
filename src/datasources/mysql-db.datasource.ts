@@ -10,12 +10,10 @@ const config = {
   user: 'root',
   password: 'triveni@123',
   database: 'countrymaster',
+  multipleStatements: true,
 };
 
-// Observe application's life cycle to disconnect the datasource when
-// application is stopped. This allows the application to be shut down
-// gracefully. The `stop()` method is inherited from `juggler.DataSource`.
-// Learn more at https://loopback.io/doc/en/lb4/Life-cycle.html
+// Observe application's life cycle
 @lifeCycleObserver('datasource')
 export class MysqlDbDataSource
   extends juggler.DataSource
@@ -31,10 +29,10 @@ export class MysqlDbDataSource
     super(dsConfig);
     try {
       if (this.connector) {
-        console.log('MySQL connection established successfully!');
+        console.log('✅ MySQL connection established successfully!');
       }
     } catch (error) {
-      console.error('MySQL connection failed:', error);
+      console.error('❌ MySQL connection failed:', error);
     }
   }
 }
