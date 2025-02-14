@@ -13,7 +13,6 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {DatabaseMigration} from './database-scripts/migrate-db'; // Ensure this is imported
 import {MysqlDbDataSource} from './datasources/mysql-db.datasource';
 import {MySequence} from './sequence';
 import {JwtStrategy} from './services/jwt-strategy';
@@ -55,22 +54,8 @@ export class CountrymasterpocApplication extends BootMixin(
         nested: true,
       },
     };
-
+    // Register the MySQL DataSource
+    this.bind('datasources.mysql').toClass(MysqlDbDataSource);
     this.component(CrudRestComponent);
-  }
-
-  // ✅ Move Migration logic to a separate lifecycle method
-  async boot() {
-    await super.boot();
-
-    try {
-      console.log('Running database migrations...');
-      const mysqlDs = new MysqlDbDataSource();
-      const migration = new DatabaseMigration(mysqlDs);
-      await migration.run();
-      console.log('Database migrations completed successfully.');
-    } catch (error) {
-      console.error('Error running migrations:', error);
-    }
   }
 }

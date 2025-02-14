@@ -1,7 +1,16 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {RfqLineItems} from './rfq-line-items.model';
 
-@model()
+@model({
+  settings: {
+    indexes: {
+      unique_mfgPN_mfgName: {
+        keys: ['mfgPN', 'mfgName'],
+        options: {unique: true},
+      },
+    },
+  },
+})
 export class Component extends Entity {
   @property({
     type: 'number',
@@ -35,8 +44,6 @@ export class Component extends Entity {
 
   @hasMany(() => RfqLineItems)
   rfqLineItems: RfqLineItems[];
-  // @hasMany(() => RfqLineItems, {keyTo: 'componentId'}) // Ensure correct FK reference
-  // rfqlineitems: RfqLineItems[];
 
   constructor(data?: Partial<Component>) {
     super(data);

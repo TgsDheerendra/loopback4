@@ -5,3 +5,4 @@ export * from './user-controller.controller';
 export * from './employee.controller';
 export * from './customer.controller';
 export * from './customeremployee.controller';
+export * from './migration.controller';
