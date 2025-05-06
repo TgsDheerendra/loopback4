@@ -1,175 +1,34 @@
-import {Credentials} from '@loopback/authentication-jwt';
 import {inject} from '@loopback/core';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  del,
-  get,
-  getModelSchemaRef,
-  param,
-  patch,
-  post,
-  put,
-  requestBody,
-  response,
-} from '@loopback/rest';
-import {User} from '../models';
+import {repository} from '@loopback/repository';
+import {post, requestBody, response} from '@loopback/rest';
 import {UserRepository} from '../repositories';
 import {JwtService} from '../services/jwt.service';
-import {MyUserService} from '../services/user.service';
-
-export class UserControllerController {
+import {WebSocketService} from '../services/websocket.service';
+export class AuthController {
   constructor(
-    @repository(UserRepository) public userRepository: UserRepository,
-    @inject('services.UserService') private readonly userService: MyUserService,
+    @repository(UserRepository) private readonly userRepository: UserRepository,
     @inject('services.JwtService') private readonly jwtService: JwtService,
+    @inject('services.WebSocketService')
+    private readonly webSocketService: WebSocketService,
   ) {}
 
   @post('/login')
   async login(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              email: {type: 'string'},
-              password: {type: 'string'},
-            },
-            required: ['email', 'password'],
-          },
-        },
-      },
-    })
-    credentials: Credentials,
-  ): Promise<{token: string; userProfile: any}> {
-    const user = await this.userService.verifyCredentials(credentials);
-    const userProfile = this.userService.convertToUserProfile(user);
+    @requestBody() credentials: {email: string; password: string},
+  ): Promise<{token: string}> {
+    const user = await this.userRepository.findOne({
+      where: {email: credentials.email},
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const userProfile = {id: user.id, email: user.email};
     const token = this.jwtService.generateToken(userProfile);
-    return {token, userProfile};
+    return {token};
   }
-
-  @post('/userAuth')
-  @response(200, {
-    description: 'User model instance',
-    content: {'application/json': {schema: getModelSchemaRef(User)}},
-  })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {
-            title: 'NewUser',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    user: Omit<User, 'id'>,
-  ): Promise<User> {
-    return this.userRepository.create(user);
-  }
-
-  @get('/userAuth/count')
-  @response(200, {
-    description: 'User model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(@param.where(User) where?: Where<User>): Promise<Count> {
-    return this.userRepository.count(where);
-  }
-
-  @get('/userAuth')
-  @response(200, {
-    description: 'Array of User model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(User, {includeRelations: true}),
-        },
-      },
-    },
-  })
-  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
-    return this.userRepository.find(filter);
-  }
-
-  @patch('/userAuth')
-  @response(200, {
-    description: 'User PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
-    return this.userRepository.updateAll(user, where);
-  }
-
-  @get('/userAuth/{id}')
-  @response(200, {
-    description: 'User model instance',
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(User, {includeRelations: true}),
-      },
-    },
-  })
-  async findById(
-    @param.path.number('id') id: number,
-    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>,
-  ): Promise<User> {
-    return this.userRepository.findById(id, filter);
-  }
-
-  @patch('/userAuth/{id}')
-  @response(204, {
-    description: 'User PATCH success',
-  })
-  async updateById(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-  ): Promise<void> {
-    await this.userRepository.updateById(id, user);
-  }
-
-  @put('/userAuth/{id}')
-  @response(204, {
-    description: 'User PUT success',
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() user: User,
-  ): Promise<void> {
-    await this.userRepository.replaceById(id, user);
-  }
-
-  @del('/userAuth/{id}')
-  @response(204, {
-    description: 'User DELETE success',
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.userRepository.deleteById(id);
+  @post('/send-message')
+  @response(200, {description: 'Send a message to WebSocket clients'})
+  async sendMessage(@requestBody() message: {text: string}): Promise<void> {
+    this.webSocketService.sendMessage(message.text);
   }
 }
